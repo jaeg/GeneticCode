@@ -1,12 +1,9 @@
 package genecode
 
-import "fmt"
-
 //Computer represents a gene computer
 type Computer struct {
-	inputs  []int
-	outputs []int
-	flag    bool
+	inputs  map[int]int
+	outputs map[int]int
 	index   int
 
 	genes []Gene
@@ -33,6 +30,12 @@ func (c *Computer) Run() {
 		//fmt.Println("Line Output:", output, c.index)
 		c.index++
 	}
+}
 
-	fmt.Println("Flag:", c.flag)
+//CreateComputer creates an instance of a computer
+func CreateComputer() *Computer {
+	c := &Computer{}
+	c.inputs = make(map[int]int)
+	c.outputs = make(map[int]int)
+	return c
 }

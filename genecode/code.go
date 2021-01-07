@@ -73,7 +73,6 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		if val1 == 0 {
 		Loop:
 			for index < len(genes) {
-				fmt.Println("Looking for endif")
 				switch v := genes[index].(type) {
 				case FunctionGene:
 					if v.Op == "endif" {
@@ -87,14 +86,14 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		}
 
 		break
-	case "endif":
-		fmt.Println("Endif")
-		break
 	case "output":
 		index++
 		output, index = genes[index].Eval(genes, index)
 		fmt.Println("Output: ", output)
-		c.computerRef.flag = true
+		if c.computerRef != nil {
+			c.computerRef.flag = true
+		}
+
 		break
 	}
 

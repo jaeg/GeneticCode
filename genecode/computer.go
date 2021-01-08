@@ -2,10 +2,9 @@ package genecode
 
 //Computer represents a gene computer
 type Computer struct {
-	inputs  map[int]int
-	outputs map[int]int
-	index   int
-	genes   []Gene
+	register map[int]int
+	index    int
+	genes    []Gene
 }
 
 //AddGene adds gene to computer
@@ -26,25 +25,24 @@ func (c *Computer) Run() {
 	for c.index < len(c.genes) {
 		//output := 0
 		_, c.index = c.genes[c.index].Eval(c.genes, c.index)
-		//fmt.Println("Line Output:", output, c.index)
+		//fmt.Println("Line Write:", output, c.index)
 		c.index++
 	}
 }
 
-//SetInput set an input register for the computer
-func (c *Computer) SetInput(key int, value int) {
-	c.inputs[key] = value
+//SetRegister set an input register for the computer
+func (c *Computer) SetRegister(key int, value int) {
+	c.register[key] = value
 }
 
-//GetOutput gets value from output register
-func (c *Computer) GetOutput(key int) int {
-	return c.outputs[key]
+//ReadRegister gets value from output register
+func (c *Computer) ReadRegister(key int) int {
+	return c.register[key]
 }
 
 //CreateComputer creates an instance of a computer
 func CreateComputer() *Computer {
 	c := &Computer{}
-	c.inputs = make(map[int]int)
-	c.outputs = make(map[int]int)
+	c.register = make(map[int]int)
 	return c
 }

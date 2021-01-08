@@ -110,7 +110,7 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		}
 
 		break
-	case "output":
+	case "set":
 		if index > len(genes)-3 {
 			return 0, len(genes)
 		}
@@ -118,17 +118,17 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		key := 0
 		key, index = genes[index].Eval(genes, index)
 		index++
-		if index > len(genes)-2 {
+		if index > len(genes)-1 {
 			return 0, len(genes)
 		}
 		output, index = genes[index].Eval(genes, index)
-		fmt.Println("Output: ", key, ",", output)
+		fmt.Println("Write: ", key, ",", output)
 		if c.computerRef != nil {
-			c.computerRef.outputs[key] = output
+			c.computerRef.register[key] = output
 		}
 		break
 
-	case "input":
+	case "read":
 		if index > len(genes)-2 {
 			return 0, len(genes)
 		}
@@ -137,9 +137,9 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		key, index = genes[index].Eval(genes, index)
 
 		if c.computerRef != nil {
-			output = c.computerRef.inputs[key]
+			output = c.computerRef.register[key]
 		}
-		fmt.Println("Input: ", key, ",", output)
+		fmt.Println("Read: ", key, ",", output)
 		break
 	}
 
@@ -240,7 +240,7 @@ func GenerateRandomGene() string {
 	geneTypes := []string{"FunctionGene", "ComparatorGene", "OperatorGene", "NumberGene"}
 	opTypes := []string{"+", "-", "*", "/"}
 	comparatorTypes := []string{">", "<", "!", "="}
-	functionTypes := []string{"if", "endif", "output", "input"}
+	functionTypes := []string{"if", "endif", "set", "read"}
 	geneString := geneTypes[randomNumber(0, len(geneTypes))]
 
 	switch geneString {

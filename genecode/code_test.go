@@ -6,13 +6,14 @@ import (
 )
 
 //Function tests
-func Test_Output(t *testing.T) {
+func Test_set(t *testing.T) {
 	genes := make([]Gene, 0)
-	genes = append(genes, FunctionGene{Op: "output"})
+	genes = append(genes, FunctionGene{Op: "set"})
 	genes = append(genes, NumberGene{Value: 1})
 	genes = append(genes, NumberGene{Value: 5})
 
 	output, index := genes[0].Eval(genes, 0)
+	fmt.Println(output, index)
 	if index != 2 {
 		t.Errorf("Did not end up at the right index")
 	}
@@ -22,9 +23,9 @@ func Test_Output(t *testing.T) {
 	}
 }
 
-func Test_Output_WithComputer(t *testing.T) {
+func Test_Write_WithComputer(t *testing.T) {
 	computer := CreateComputer()
-	computer.AddGene(FunctionGene{Op: "output"})
+	computer.AddGene(FunctionGene{Op: "set"})
 	computer.AddGene(NumberGene{Value: 1})
 	computer.AddGene(NumberGene{Value: 5})
 
@@ -37,15 +38,15 @@ func Test_Output_WithComputer(t *testing.T) {
 		t.Errorf("Did not output correctly")
 	}
 
-	if computer.outputs[1] != 5 {
+	if computer.register[1] != 5 {
 		t.Errorf("Did not set output map correctly")
 	}
 }
 
-func Test_Input(t *testing.T) {
+func Test_Read(t *testing.T) {
 	computer := CreateComputer()
-	computer.inputs[1] = 1
-	computer.AddGene(FunctionGene{Op: "input"})
+	computer.register[1] = 1
+	computer.AddGene(FunctionGene{Op: "read"})
 	computer.AddGene(NumberGene{Value: 1})
 
 	output, index := computer.genes[0].Eval(computer.genes, computer.index)
@@ -53,7 +54,7 @@ func Test_Input(t *testing.T) {
 		t.Errorf("Did not end up at the right index")
 	}
 
-	if output != computer.inputs[1] {
+	if output != computer.register[1] {
 		t.Errorf("Did not output correctly")
 	}
 
@@ -99,31 +100,31 @@ func Test_NestedIf2(t *testing.T) {
 	c.AddGene(ComparatorGene{Op: "="})
 	c.AddGene(NumberGene{Value: 5})
 	c.AddGene(NumberGene{Value: 5})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(FunctionGene{Op: "if"})
 	c.AddGene(ComparatorGene{Op: "="})
 	c.AddGene(NumberGene{Value: 5})
 	c.AddGene(NumberGene{Value: 5})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 2})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(FunctionGene{Op: "endif"})
 	c.AddGene(FunctionGene{Op: "endif"})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 2})
 	c.AddGene(NumberGene{Value: 1})
 
 	c.Run()
 	fmt.Println(c.index)
-	if c.outputs[1] != 1 {
+	if c.register[1] != 1 {
 		t.Errorf("Did not process outer if")
 	}
-	if c.outputs[2] != 1 {
+	if c.register[2] != 1 {
 		t.Errorf("Did not process nested if")
 	}
-	if c.outputs[3] == 1 {
+	if c.register[3] == 1 {
 		t.Errorf("Didn't run code after the if")
 	}
 }
@@ -134,31 +135,31 @@ func Test_NestedIfDontRun(t *testing.T) {
 	c.AddGene(ComparatorGene{Op: "="})
 	c.AddGene(NumberGene{Value: 3})
 	c.AddGene(NumberGene{Value: 5})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(FunctionGene{Op: "if"})
 	c.AddGene(ComparatorGene{Op: "="})
 	c.AddGene(NumberGene{Value: 5})
 	c.AddGene(NumberGene{Value: 5})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 2})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(FunctionGene{Op: "endif"})
 	c.AddGene(FunctionGene{Op: "endif"})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 3})
 	c.AddGene(NumberGene{Value: 1})
 
 	c.Run()
 
-	if c.outputs[1] == 1 {
+	if c.register[1] == 1 {
 		t.Errorf("Should not of processed outer if")
 	}
-	if c.outputs[2] == 1 {
+	if c.register[2] == 1 {
 		t.Errorf("Should not of processed nested if")
 	}
-	if c.outputs[3] != 1 {
+	if c.register[3] != 1 {
 		t.Errorf("Didn't run code after the if")
 	}
 }
@@ -169,30 +170,30 @@ func Test_NestedIfNestedDoesntProcess(t *testing.T) {
 	c.AddGene(ComparatorGene{Op: "="})
 	c.AddGene(NumberGene{Value: 5})
 	c.AddGene(NumberGene{Value: 5})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(FunctionGene{Op: "if"})
 	c.AddGene(ComparatorGene{Op: "="})
 	c.AddGene(NumberGene{Value: 5})
 	c.AddGene(NumberGene{Value: 4})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 2})
 	c.AddGene(NumberGene{Value: 1})
 	c.AddGene(FunctionGene{Op: "endif"})
 	c.AddGene(FunctionGene{Op: "endif"})
-	c.AddGene(FunctionGene{Op: "output"})
+	c.AddGene(FunctionGene{Op: "set"})
 	c.AddGene(NumberGene{Value: 3})
 	c.AddGene(NumberGene{Value: 1})
 	c.Run()
-	fmt.Println(c.outputs)
-	if c.outputs[1] != 1 {
+	fmt.Println(c.register)
+	if c.register[1] != 1 {
 		t.Errorf("Should of processed outer if")
 	}
-	if c.outputs[2] == 1 {
+	if c.register[2] == 1 {
 		t.Errorf("Should not of processed nested if")
 	}
-	if c.outputs[3] != 1 {
+	if c.register[3] != 1 {
 		t.Errorf("Didn't run code after the if")
 	}
 }
@@ -265,9 +266,9 @@ func Test_IfReturnZeroWhenNotEnougArguements(t *testing.T) {
 	}
 }
 
-func Test_OutputReturns0(t *testing.T) {
+func Test_WriteReturns0(t *testing.T) {
 	genes := make([]Gene, 0)
-	genes = append(genes, FunctionGene{Op: "output"})
+	genes = append(genes, FunctionGene{Op: "set"})
 	genes = append(genes, NumberGene{Value: 5})
 
 	output, index := genes[0].Eval(genes, 0)
@@ -279,9 +280,9 @@ func Test_OutputReturns0(t *testing.T) {
 	}
 }
 
-func Test_InputReturns0(t *testing.T) {
+func Test_ReadReturns0(t *testing.T) {
 	genes := make([]Gene, 0)
-	genes = append(genes, FunctionGene{Op: "input"})
+	genes = append(genes, FunctionGene{Op: "read"})
 
 	output, index := genes[0].Eval(genes, 0)
 	if index != len(genes) {
@@ -497,7 +498,6 @@ func Test_CreateGeneError(t *testing.T) {
 func Test_GenerateRandomGene(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		gene := GenerateRandomGene()
-		fmt.Println(gene)
 		if len(gene) == 0 {
 			t.Errorf("Didn't return a gene")
 		}

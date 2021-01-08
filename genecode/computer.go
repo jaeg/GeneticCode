@@ -5,8 +5,7 @@ type Computer struct {
 	inputs  map[int]int
 	outputs map[int]int
 	index   int
-
-	genes []Gene
+	genes   []Gene
 }
 
 //AddGene adds gene to computer
@@ -30,6 +29,16 @@ func (c *Computer) Run() {
 		//fmt.Println("Line Output:", output, c.index)
 		c.index++
 	}
+}
+
+//SetInput set an input register for the computer
+func (c *Computer) SetInput(key int, value int) {
+	c.inputs[key] = value
+}
+
+//GetOutput gets value from output register
+func (c *Computer) GetOutput(key int) int {
+	return c.outputs[key]
 }
 
 //CreateComputer creates an instance of a computer

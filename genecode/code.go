@@ -3,9 +3,13 @@ package genecode
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 )
+
+//NumberMax sets the max number for random genes
+var NumberMax = 10
 
 // Gene base gene interface
 type Gene interface {
@@ -32,7 +36,13 @@ func (c ComparatorGene) Eval(genes []Gene, index int) (int, int) {
 	output := 0
 	val1 := 0
 	val2 := 0
+	if index > len(genes)-3 {
+		return 0, len(genes)
+	}
 	val1, index = genes[index+1].Eval(genes, index+1)
+	if index > len(genes)-2 {
+		return 0, len(genes)
+	}
 	val2, index = genes[index+1].Eval(genes, index+1)
 	switch c.Op {
 	case "<":
@@ -74,6 +84,9 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 	//If gene is 1 express gene[index+1]
 	case "if":
 		val1 := 0
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		val1, index = genes[index+1].Eval(genes, index+1)
 		if val1 == 0 {
 			depth := 0
@@ -98,18 +111,27 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 
 		break
 	case "output":
+		if index > len(genes)-3 {
+			return 0, len(genes)
+		}
 		index++
 		key := 0
 		key, index = genes[index].Eval(genes, index)
 		index++
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		output, index = genes[index].Eval(genes, index)
-		fmt.Println("Output: ", output)
+		fmt.Println("Output: ", key, ",", output)
 		if c.computerRef != nil {
 			c.computerRef.outputs[key] = output
 		}
 		break
 
 	case "input":
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		index++
 		key := 0
 		key, index = genes[index].Eval(genes, index)
@@ -117,7 +139,7 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		if c.computerRef != nil {
 			output = c.computerRef.inputs[key]
 		}
-		fmt.Println("Input: ", output)
+		fmt.Println("Input: ", key, ",", output)
 		break
 	}
 
@@ -132,12 +154,18 @@ type OperatorGene struct {
 //Eval evaluate the gene
 func (c OperatorGene) Eval(genes []Gene, index int) (int, int) {
 	output := 0
+	if index > len(genes)-3 {
+		return 0, len(genes)
+	}
 
 	switch c.Op {
 	case "+":
 		val1 := 0
 		val2 := 0
 		val1, index = genes[index+1].Eval(genes, index+1)
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		val2, index = genes[index+1].Eval(genes, index+1)
 		output = val1 + val2
 		break
@@ -145,6 +173,9 @@ func (c OperatorGene) Eval(genes []Gene, index int) (int, int) {
 		val1 := 0
 		val2 := 0
 		val1, index = genes[index+1].Eval(genes, index+1)
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		val2, index = genes[index+1].Eval(genes, index+1)
 		output = val1 - val2
 		break
@@ -152,16 +183,21 @@ func (c OperatorGene) Eval(genes []Gene, index int) (int, int) {
 		val1 := 0
 		val2 := 0
 		val1, index = genes[index+1].Eval(genes, index+1)
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		val2, index = genes[index+1].Eval(genes, index+1)
 		if val2 != 0 {
 			output = val1 / val2
 		}
-
 		break
 	case "*":
 		val1 := 0
 		val2 := 0
 		val1, index = genes[index+1].Eval(genes, index+1)
+		if index > len(genes)-2 {
+			return 0, len(genes)
+		}
 		val2, index = genes[index+1].Eval(genes, index+1)
 		output = val1 * val2
 		break
@@ -197,4 +233,29 @@ func CreateGeneFromString(geneString string) (gene Gene, returnErr error) {
 	}
 
 	return
+}
+
+//GenerateRandomGene Creates a randomized gene
+func GenerateRandomGene() string {
+	geneTypes := []string{"FunctionGene", "ComparatorGene", "OperatorGene", "NumberGene"}
+	opTypes := []string{"+", "-", "*", "/"}
+	comparatorTypes := []string{">", "<", "!", "="}
+	functionTypes := []string{"if", "endif", "output", "input"}
+	geneString := geneTypes[randomNumber(0, len(geneTypes))]
+
+	switch geneString {
+	case "NumberGene":
+		geneString += " " + strconv.Itoa(randomNumber(0, NumberMax))
+	case "FunctionGene":
+		geneString += " " + functionTypes[randomNumber(0, len(functionTypes))]
+	case "ComparatorGene":
+		geneString += " " + comparatorTypes[randomNumber(0, len(comparatorTypes))]
+	case "OperatorGene":
+		geneString += " " + opTypes[randomNumber(0, len(opTypes))]
+	}
+	return geneString
+}
+
+func randomNumber(min int, max int) int {
+	return rand.Intn(max-min) + min
 }

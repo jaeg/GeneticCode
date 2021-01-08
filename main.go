@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/jaeg/genecode/genecode"
 )
 
 func main() {
-
+	rand.Seed(time.Now().Unix())
 	computer := genecode.CreateComputer()
 
 	/*
@@ -33,4 +37,19 @@ func main() {
 	computer.AddGene(genecode.NumberGene{Value: 1})
 	computer.AddGene(genecode.NumberGene{Value: 99})
 	computer.Run()
+
+	fmt.Println("- Random Computer -")
+	computer = genecode.CreateComputer()
+	for i := 0; i < 50; i++ {
+		geneString := genecode.GenerateRandomGene()
+
+		gene, err := genecode.CreateGeneFromString(geneString)
+		if err != nil {
+			fmt.Println("Error with gene ", geneString)
+			continue
+		}
+		computer.AddGene(gene)
+	}
+	computer.Run()
+
 }

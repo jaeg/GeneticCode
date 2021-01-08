@@ -223,6 +223,74 @@ func Test_NumberGeneEvaluatesItsValue(t *testing.T) {
 }
 
 //Comparator Tests
+
+func Test_ComparatorReturnZeroWhenNotEnougArguements(t *testing.T) {
+	genes := make([]Gene, 0)
+	genes = append(genes, ComparatorGene{Op: "="})
+	genes = append(genes, NumberGene{Value: 5})
+
+	output, index := genes[0].Eval(genes, 0)
+	if index != len(genes) {
+		t.Errorf("Did not end up at the right index")
+	}
+	if output != 0 {
+		t.Errorf("Did not compare correctly")
+	}
+}
+
+func Test_OperatorReturnZeroWhenNotEnougArguements(t *testing.T) {
+	genes := make([]Gene, 0)
+	genes = append(genes, OperatorGene{Op: "+"})
+	genes = append(genes, NumberGene{Value: 5})
+
+	output, index := genes[0].Eval(genes, 0)
+	if index != len(genes) {
+		t.Errorf("Did not end up at the right index")
+	}
+	if output != 0 {
+		t.Errorf("Did not compare correctly")
+	}
+}
+
+func Test_IfReturnZeroWhenNotEnougArguements(t *testing.T) {
+	genes := make([]Gene, 0)
+	genes = append(genes, FunctionGene{Op: "if"})
+
+	output, index := genes[0].Eval(genes, 0)
+	if index != len(genes) {
+		t.Errorf("Did not end up at the right index")
+	}
+	if output != 0 {
+		t.Errorf("Did not compare correctly")
+	}
+}
+
+func Test_OutputReturns0(t *testing.T) {
+	genes := make([]Gene, 0)
+	genes = append(genes, FunctionGene{Op: "output"})
+	genes = append(genes, NumberGene{Value: 5})
+
+	output, index := genes[0].Eval(genes, 0)
+	if index != len(genes) {
+		t.Errorf("Did not end up at the right index")
+	}
+	if output != 0 {
+		t.Errorf("Did not compare correctly")
+	}
+}
+
+func Test_InputReturns0(t *testing.T) {
+	genes := make([]Gene, 0)
+	genes = append(genes, FunctionGene{Op: "input"})
+
+	output, index := genes[0].Eval(genes, 0)
+	if index != len(genes) {
+		t.Errorf("Did not end up at the right index")
+	}
+	if output != 0 {
+		t.Errorf("Did not compare correctly")
+	}
+}
 func Test_ComparatorEquals(t *testing.T) {
 	genes := make([]Gene, 0)
 	genes = append(genes, ComparatorGene{Op: "="})
@@ -423,5 +491,15 @@ func Test_CreateGeneError(t *testing.T) {
 	_, err := CreateGeneFromString(geneString)
 	if err == nil {
 		t.Errorf("Didn't error when attempting to create a bad gene")
+	}
+}
+
+func Test_GenerateRandomGene(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		gene := GenerateRandomGene()
+		fmt.Println(gene)
+		if len(gene) == 0 {
+			t.Errorf("Didn't return a gene")
+		}
 	}
 }

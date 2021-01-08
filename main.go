@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/jaeg/genecode/genecode"
@@ -58,18 +59,18 @@ func main() {
 
 	//Simulate
 
-	const MaxGenes = 200
-	const PopulationStart = 1000
+	const MaxGenes = 100
+	const PopulationSize = 100
 	globalMaxFitness := 0
 	tests := []genecode.CreatureTest{
-		{InputRegister: map[int]int{1: 0}, ExpectedRegister: map[int]int{2: 1}},
-		{InputRegister: map[int]int{1: 1}, ExpectedRegister: map[int]int{2: 2}},
-		{InputRegister: map[int]int{1: 2}, ExpectedRegister: map[int]int{2: 3}},
-		{InputRegister: map[int]int{1: 3}, ExpectedRegister: map[int]int{2: 0, 3: 1}},
+		{InputRegister: map[int]int{1: 1, 2: 0}, ExpectedRegister: map[int]int{3: 0, 4: 1}},
+		{InputRegister: map[int]int{1: 0, 2: 1}, ExpectedRegister: map[int]int{3: 1, 4: 0}},
+		{InputRegister: map[int]int{1: 1, 2: 1}, ExpectedRegister: map[int]int{3: 0, 4: 0}},
+		{InputRegister: map[int]int{1: 0, 2: 0}, ExpectedRegister: map[int]int{3: 1, 4: 1}},
 	}
 	population := []*genecode.Creature{}
 
-	for i := 0; i < PopulationStart; i++ {
+	for i := 0; i < PopulationSize; i++ {
 		c := &genecode.Creature{}
 		for j := 0; j < MaxGenes; j++ {
 			geneString := genecode.GenerateRandomGene()
@@ -81,22 +82,20 @@ func main() {
 	found := false
 	for currentGeneration := 0; found == false; currentGeneration++ {
 		maxFitness := 0
+		averageFitness := 0
 		fmt.Println("Generation ", currentGeneration)
 		fmt.Println("Population: ", len(population))
-		breedable := []*genecode.Creature{}
+
 		//Calculate fitness for each creature
 		for i := 0; i < len(population); i++ {
 			fitness := population[i].CalculateFitness(tests)
+			averageFitness += fitness
 			if fitness > maxFitness {
 				maxFitness = fitness
 			}
 
 			if fitness > globalMaxFitness {
 				globalMaxFitness = fitness
-			}
-
-			if fitness >= 2 {
-				breedable = append(breedable, population[i])
 			}
 
 			if fitness == len(tests) {
@@ -108,42 +107,30 @@ func main() {
 			}
 		}
 
-		//Breed
+		sort.Sort(genecode.ByFitness(population))
+
 		nextPopulation := []*genecode.Creature{}
-		for i := 0; i < len(breedable); i++ {
-			/*if len(breedable) == 1 {
-				nextPopulation = append(nextPopulation, breedable[i]) //You you are breedable you at least go to the next generation
-			}*/
-
-			for j := i; j < len(breedable); j++ {
-				nextPopulation = append(nextPopulation, breedable[i].BreedWith(breedable[j], 10)...)
-			}
+		// Top 10% go to the next generation automatically
+		s := (10 * PopulationSize) / 100
+		for i := 0; i < s; i++ {
+			nextPopulation = append(nextPopulation, population[i])
 		}
 
-		//Fill out with some random population
-		for i := 0; i < 1000; i++ {
-			c := &genecode.Creature{}
-			for j := 0; j < MaxGenes; j++ {
-				geneString := genecode.GenerateRandomGene()
-				c.AddDNA(geneString)
-			}
-			nextPopulation = append(nextPopulation, c)
-		}
+		// Top 50% go to the next generation automatically
+		s = (45 * PopulationSize) / 100
 
-		gap := PopulationStart - len(nextPopulation)
-		if gap < 0 {
-			//Randomly kill until we get to the population size.
-			for i := gap; i < 0; i++ {
-				s := rand.Intn(len(nextPopulation))
-				nextPopulation = append(nextPopulation[:s], nextPopulation[s+1:]...)
-			}
+		for i := 0; i < s; i++ {
+			r := rand.Intn(PopulationSize / 2)
+			//fmt.Println(r)
+			child := population[i].BreedWith(population[r], 2)
+			nextPopulation = append(nextPopulation, child...)
 		}
 
 		//Swap the generation
 		population = nextPopulation
 		fmt.Println("New Population: ", len(population))
-		fmt.Println("Breedable Population: ", len(breedable))
 		fmt.Println("Max Fitness: ", maxFitness)
+		fmt.Println("Average Fitness: ", averageFitness/len(population))
 		fmt.Println("Global Max Fitness: ", globalMaxFitness)
 		fmt.Println("------------------")
 	}

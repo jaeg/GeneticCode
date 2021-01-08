@@ -4,7 +4,7 @@ import (
 	"math/rand"
 )
 
-var MutationChance = 0.5
+var MutationChance = 0.3
 
 //Creature represents a creature with dna that can run the computer
 type Creature struct {
@@ -89,3 +89,11 @@ func (c *Creature) CalculateFitness(tests []CreatureTest) int {
 	c.Fitness = passes
 	return passes
 }
+
+// ByFitness implements sort.Interface for []Creature based on
+// the Fitness field.
+type ByFitness []*Creature
+
+func (a ByFitness) Len() int           { return len(a) }
+func (a ByFitness) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByFitness) Less(i, j int) bool { return a[i].Fitness > a[j].Fitness }

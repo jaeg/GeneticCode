@@ -2,7 +2,6 @@ package genecode
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -122,7 +121,7 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 			return 0, len(genes)
 		}
 		output, index = genes[index].Eval(genes, index)
-		fmt.Println("Write: ", key, ",", output)
+		//fmt.Println("Write: ", key, ",", output)
 		if c.computerRef != nil {
 			c.computerRef.register[key] = output
 		}
@@ -139,7 +138,7 @@ func (c FunctionGene) Eval(genes []Gene, index int) (int, int) {
 		if c.computerRef != nil {
 			output = c.computerRef.register[key]
 		}
-		fmt.Println("Read: ", key, ",", output)
+		//fmt.Println("Read: ", key, ",", output)
 		break
 	}
 

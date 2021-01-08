@@ -40,6 +40,12 @@ func (c *Computer) ReadRegister(key int) int {
 	return c.register[key]
 }
 
+//Clear clears the computer's registers
+func (c *Computer) Clear() {
+	c.register = make(map[int]int)
+	c.index = 0
+}
+
 //CreateComputer creates an instance of a computer
 func CreateComputer() *Computer {
 	c := &Computer{}

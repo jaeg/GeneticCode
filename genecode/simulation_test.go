@@ -9,7 +9,8 @@ func Test_CanSolveToGetAProgram(t *testing.T) {
 		{InputRegister: map[int]int{1: 1, 2: 0}, ExpectedRegister: map[int]int{3: 0, 4: 1}},
 	}
 
-	results, err := Solve(tests, 100, 100, -1)
+	simulation := &Simulation{MutationChance: 0.3}
+	results, err := simulation.Solve(tests, 100, 100, -1)
 	if results == nil {
 		t.Error("Failed to solve")
 	}
@@ -27,7 +28,8 @@ func Test_SolveCanFailDuetoGenerations(t *testing.T) {
 		{InputRegister: map[int]int{1: 1, 2: 5}, ExpectedRegister: map[int]int{3: 1, 4: 1}},
 	}
 
-	results, err := Solve(tests, 100, 100, 1)
+	simulation := &Simulation{MutationChance: 0.3}
+	results, err := simulation.Solve(tests, 100, 100, 1)
 
 	if results != nil {
 		t.Error("Test found a solution anyway.")

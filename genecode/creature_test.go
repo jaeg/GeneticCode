@@ -21,7 +21,7 @@ func Test_CreatureMate(t *testing.T) {
 
 	fmt.Println("C2 ", c2.dna)
 
-	child := c1.BreedWith(c2, 1)
+	child := c1.BreedWith(c2, 0.3, 1)
 	fmt.Println("C3 ", child[0].dna)
 
 	if len(child[0].dna) != 10 {

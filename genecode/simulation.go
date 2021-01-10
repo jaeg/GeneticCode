@@ -7,8 +7,14 @@ import (
 	"sort"
 )
 
+//Simulation represents the virtual word to evolve programs in.
+type Simulation struct {
+	MutationChance float64
+	Verbose        bool
+}
+
 //Solve solves
-func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGenerations int) (*Creature, error) {
+func (s *Simulation) Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGenerations int) (*Creature, error) {
 	globalMaxFitness := 0
 	population := []*Creature{}
 
@@ -29,8 +35,10 @@ func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGeneration
 		}
 		maxFitness := 0
 		averageFitness := 0
-		fmt.Println("Generation ", currentGeneration)
-		fmt.Println("Population: ", len(population))
+		if s.Verbose {
+			fmt.Println("Generation ", currentGeneration)
+			fmt.Println("Population: ", len(population))
+		}
 
 		//Calculate fitness for each creature
 		for i := 0; i < len(population); i++ {
@@ -45,9 +53,11 @@ func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGeneration
 			}
 
 			if fitness == len(tests) {
-				fmt.Println("Found the program!")
-				fmt.Println("Generation: ", population[i].Generatation)
-				fmt.Println(population[i])
+				if s.Verbose {
+					fmt.Println("Found the program!")
+					fmt.Println("Generation: ", population[i].Generatation)
+					fmt.Println(population[i])
+				}
 				return population[i], nil
 			}
 		}
@@ -56,27 +66,29 @@ func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGeneration
 
 		nextPopulation := []*Creature{}
 		// Top 10% go to the next generation automatically
-		s := (10 * populationSize) / 100
-		for i := 0; i < s; i++ {
+		elite := (10 * populationSize) / 100
+		for i := 0; i < elite; i++ {
 			nextPopulation = append(nextPopulation, population[i])
 		}
 
 		// Top 50% go to the next generation automatically
-		s = (45 * populationSize) / 100
+		elite = (45 * populationSize) / 100
 
-		for i := 0; i < s; i++ {
+		for i := 0; i < elite; i++ {
 			r := rand.Intn(populationSize / 2)
 			//fmt.Println(r)
-			child := population[i].BreedWith(population[r], 2)
+			child := population[i].BreedWith(population[r], s.MutationChance, 2)
 			nextPopulation = append(nextPopulation, child...)
 		}
 		//Swap the generation
 		population = nextPopulation
-		fmt.Println("New Population: ", len(population))
-		fmt.Println("Max Fitness: ", maxFitness)
-		fmt.Println("Average Fitness: ", averageFitness/len(population))
-		fmt.Println("Global Max Fitness: ", globalMaxFitness)
-		fmt.Println("------------------")
+		if s.Verbose {
+			fmt.Println("New Population: ", len(population))
+			fmt.Println("Max Fitness: ", maxFitness)
+			fmt.Println("Average Fitness: ", averageFitness/len(population))
+			fmt.Println("Global Max Fitness: ", globalMaxFitness)
+			fmt.Println("------------------")
+		}
 	}
 
 	return nil, errors.New("No solution found within generation max")

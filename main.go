@@ -8,9 +8,6 @@ import (
 	"github.com/jaeg/genecode/genecode"
 )
 
-const MaxGenes = 100
-const PopulationSize = 100
-
 func main() {
 	rand.Seed(time.Now().Unix())
 	//Simulate
@@ -21,5 +18,7 @@ func main() {
 		{InputRegister: map[int]int{1: 0, 2: 0}, ExpectedRegister: map[int]int{3: 1, 4: 1}},
 	}
 
-	fmt.Println(genecode.Solve(tests, 100, 100, -1))
+	simulation := &genecode.Simulation{MutationChance: 0.3, Verbose: true}
+
+	fmt.Println(simulation.Solve(tests, 100, 100, -1))
 }

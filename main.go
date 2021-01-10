@@ -22,5 +22,4 @@ func main() {
 	}
 
 	fmt.Println(genecode.Solve(tests, 100, 100, -1))
-
 }

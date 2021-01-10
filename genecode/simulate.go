@@ -1,13 +1,14 @@
 package genecode
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"sort"
 )
 
 //Solve solves
-func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGenerations int) *Creature {
+func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGenerations int) (*Creature, error) {
 	globalMaxFitness := 0
 	population := []*Creature{}
 
@@ -47,7 +48,7 @@ func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGeneration
 				fmt.Println("Found the program!")
 				fmt.Println("Generation: ", population[i].Generatation)
 				fmt.Println(population[i])
-				return population[i]
+				return population[i], nil
 			}
 		}
 
@@ -78,5 +79,5 @@ func Solve(tests []CreatureTest, populationSize int, maxGenes int, maxGeneration
 		fmt.Println("------------------")
 	}
 
-	return nil
+	return nil, errors.New("No solution found within generation max")
 }

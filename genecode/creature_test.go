@@ -2,6 +2,7 @@ package genecode
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 )
 
@@ -42,4 +43,18 @@ func Test_CreatureFitness(t *testing.T) {
 	if passes != 1 {
 		t.Errorf("Not enough passes")
 	}
+}
+
+func Test_CreatureSort(t *testing.T) {
+	creatures := []*Creature{{Fitness: 1}, {Fitness: 5}, {Fitness: 2}}
+	if creatures[0].Fitness == 5 {
+		t.Errorf("Array was already sorted")
+	}
+
+	sort.Sort(ByFitness(creatures))
+
+	if creatures[0].Fitness != 5 {
+		t.Errorf("Creature array failed to sort.")
+	}
+
 }

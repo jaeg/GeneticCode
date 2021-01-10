@@ -4,6 +4,7 @@ import (
 	"math/rand"
 )
 
+//MutationChance the chance a gene will be randomly regenerated
 var MutationChance = 0.3
 
 //Creature represents a creature with dna that can run the computer
@@ -19,6 +20,7 @@ type CreatureTest struct {
 	ExpectedRegister map[int]int
 }
 
+//AddDNA adds the dna
 func (c *Creature) AddDNA(dna string) {
 	c.dna = append(c.dna, dna)
 }
@@ -35,17 +37,17 @@ func (c *Creature) BreedWith(mate *Creature, count int) []*Creature {
 		dnaI := 0
 		for ; dnaI < splitPoint; dnaI++ {
 			if rand.Float64() < MutationChance {
-				creature.dna = append(creature.dna, GenerateRandomGene())
+				creature.AddDNA(GenerateRandomGene())
 			} else {
-				creature.dna = append(creature.dna, c.dna[dnaI])
+				creature.AddDNA(c.dna[dnaI])
 			}
 		}
 
 		for ; dnaI < len(mate.dna); dnaI++ {
 			if rand.Float64() < MutationChance {
-				creature.dna = append(creature.dna, GenerateRandomGene())
+				creature.AddDNA(GenerateRandomGene())
 			} else {
-				creature.dna = append(creature.dna, mate.dna[dnaI])
+				creature.AddDNA(c.dna[dnaI])
 			}
 		}
 

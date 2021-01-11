@@ -20,5 +20,5 @@ func main() {
 
 	simulation := &genecode.Simulation{MutationChance: 0.3, Verbose: true}
 
-	fmt.Println(simulation.Solve(tests, 100, 100, -1))
+	fmt.Println(simulation.Solve(tests, 1000, 100, -1))
 }

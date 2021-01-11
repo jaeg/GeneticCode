@@ -65,19 +65,21 @@ func (s *Simulation) Solve(tests []CreatureTest, populationSize int, maxGenes in
 		sort.Sort(ByFitness(population))
 
 		nextPopulation := []*Creature{}
-		// Top 10% go to the next generation automatically
+		// Top 10% go to the next generation automatically and are guarenteed to breed at least once.
 		elite := (10 * populationSize) / 100
 		for i := 0; i < elite; i++ {
 			nextPopulation = append(nextPopulation, population[i])
+			r := rand.Intn(elite)
+			child := population[i].BreedWithCol(population[r], s.MutationChance, 1)
+			nextPopulation = append(nextPopulation, child...)
 		}
 
 		// Top 50% go to the next generation automatically
-		elite = (45 * populationSize) / 100
+		elite = (80 * populationSize) / 100
 
 		for i := 0; i < elite; i++ {
 			r := rand.Intn(populationSize / 2)
-			//fmt.Println(r)
-			child := population[i].BreedWith(population[r], s.MutationChance, 2)
+			child := population[i].BreedWithCol(population[r], s.MutationChance, 1)
 			nextPopulation = append(nextPopulation, child...)
 		}
 		//Swap the generation

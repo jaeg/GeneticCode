@@ -29,6 +29,29 @@ func Test_CreatureMate(t *testing.T) {
 	}
 }
 
+func Test_CreatureMateCol(t *testing.T) {
+	c1 := &Creature{}
+	for i := 0; i < 10; i++ {
+		c1.dna = append(c1.dna, GenerateRandomGene())
+	}
+
+	fmt.Println("C1 COL", c1.dna)
+
+	c2 := &Creature{}
+	for i := 0; i < 10; i++ {
+		c2.dna = append(c2.dna, GenerateRandomGene())
+	}
+
+	fmt.Println("C2 COL", c2.dna)
+
+	child := c1.BreedWithCol(c2, 0.3, 1)
+	fmt.Println("C3 COL", child[0].dna)
+
+	if len(child[0].dna) != 10 {
+		t.Errorf("Child doesn't have enough genes")
+	}
+}
+
 func Test_CreatureFitness(t *testing.T) {
 	c1 := &Creature{}
 	c1.dna = append(c1.dna, "FunctionGene set")

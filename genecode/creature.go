@@ -44,7 +44,33 @@ func (c *Creature) BreedWith(mate *Creature, mutationChance float64, count int) 
 			if rand.Float64() < mutationChance {
 				creature.AddDNA(GenerateRandomGene())
 			} else {
-				creature.AddDNA(c.dna[dnaI])
+				creature.AddDNA(mate.dna[dnaI])
+			}
+		}
+
+		creatures = append(creatures, creature)
+	}
+
+	return creatures
+}
+
+//BreedWithCol breed with other creature by combining the dna vs splitting it
+func (c *Creature) BreedWithCol(mate *Creature, mutationChance float64, count int) []*Creature {
+	creatures := make([]*Creature, 0)
+
+	for i := 0; i < count; i++ {
+		creature := &Creature{}
+		creature.Generatation = c.Generatation + 1
+
+		for dnaI := 0; dnaI < len(c.dna); dnaI++ {
+			if rand.Float64() < mutationChance {
+				creature.AddDNA(GenerateRandomGene())
+			} else {
+				if rand.Float64() < 0.5 {
+					creature.AddDNA(c.dna[dnaI])
+				} else {
+					creature.AddDNA(mate.dna[dnaI])
+				}
 			}
 		}
 
